@@ -61,7 +61,7 @@ const planeMaterial = new THREE.MeshBasicMaterial({
 });
 const floorPlane = new THREE.Mesh(planGeometry, planeMaterial);
 floorPlane.rotation.x = Math.PI / 2; //rotate 90 degrees
-floorPlane.position.y = -Math.PI; //rotate 90 degrees
+floorPlane.position.y = -Math.PI;
 scene.add(floorPlane);
 
 //create walls
@@ -74,25 +74,45 @@ const frontWallGeo = new THREE.BoxGeometry(50, 20, 0.001);
 const frontWallMat = new THREE.MeshBasicMaterial({ color: "green" });
 const frontWall = new THREE.Mesh(frontWallGeo, frontWallMat);
 frontWall.position.z = -20;
-WallGroup.add(frontWall);
 
 //Left Wall
 const leftWallGeo = new THREE.BoxGeometry(50, 20, 0.001);
 const leftWallMat = new THREE.MeshBasicMaterial({ color: "red" });
-const leftWall = new THREE.Mesh(leftWallGeo,leftWallMat);
+const leftWall = new THREE.Mesh(leftWallGeo, leftWallMat);
 
-leftWall.rotation.y = Math.PI/2;
-leftWall.position.x =-20;
-WallGroup.add(leftWall);
+leftWall.rotation.y = Math.PI / 2;
+leftWall.position.x = -20;
 
 //rightwall
 const rightWallGeo = new THREE.BoxGeometry(50, 20, 0.001);
 const rightWallMat = new THREE.MeshBasicMaterial({ color: "blue" });
-const rightWall = new THREE.Mesh(rightWallGeo,rightWallMat);
+const rightWall = new THREE.Mesh(rightWallGeo, rightWallMat);
 
-rightWall.rotation.y = Math.PI/2;
-rightWall.position.x =20;
-WallGroup.add(rightWall);
+rightWall.rotation.y = Math.PI / 2; //goes 90 degrees
+rightWall.position.x = 20;
+
+WallGroup.add(frontWall, leftWall, rightWall);
+
+//loop through each wall and create binding box
+
+for (let i=0; i< WallGroup.children.length;i++){
+  WallGroup.children[i].BBox = new THREE.Box3();
+  WallGroup.children[i].BBox.setFromObject(WallGroup.children[i]);
+}
+
+//ceiling
+
+const ceilingGeo = new THREE.PlaneGeometry(50, 50); //geometry is shape of the object
+const ceilingMat = new THREE.MeshBasicMaterial({
+  color: "yellow",
+});
+
+const ceiling = new THREE.Mesh(ceilingGeo, ceilingMat);
+
+ceiling.rotation.x = Math.PI / 2;
+ceiling.position.y = 12;
+
+scene.add(ceiling);
 
 //function for when a key is pressed
 function onkeydown(event) {
