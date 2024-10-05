@@ -51,7 +51,7 @@ const loader = new THREE.TextureLoader();
 
 //floor texture
 
-const floorTexture = loader.load("img/MarbleFloor.jpg");
+const floorTexture = loader.load("img/MarbleFloor.png");
 
 //create the floor plane
 const planGeometry = new THREE.PlaneGeometry(50, 50);
@@ -65,14 +65,15 @@ floorPlane.position.y = -Math.PI; //rotate 90 degrees
 scene.add(floorPlane);
 
 //create walls
-const WallGroup = THREE.Group();
+const WallGroup = new THREE.Group();
 scene.add(WallGroup);
 
 //Front Wall
 
-const frontWall = new THREE.Mesh(
-  new THREE.BoxGeometry(50,20,0.001)
-)
+const frontWall = new THREE.Mesh(new THREE.BoxGeometry(50, 20, 0.001), new THREE.MeshBasicMaterial({ color: "green" }));
+
+frontWall.position.z = -20;
+WallGroup.add(frontWall);
 
 //function for when a key is pressed
 function onkeydown(event) {
