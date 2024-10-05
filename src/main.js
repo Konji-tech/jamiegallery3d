@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-import {PointerLockControls} from 'three-stdlib';
+import { PointerLockControls } from "three-stdlib";
 
 const scene = new THREE.Scene(); // create the scene
 const w = window.innerWidth;
@@ -31,7 +31,7 @@ const ambientLight = new THREE.AmbientLight(0x101010, 1.0); //color, intensity, 
 scene.add(ambientLight);
 
 //Directional Light
-const sunlight = new THREE.DirectionalLight(0xddddd, 0.5); //color, intensity
+const sunlight = new THREE.DirectionalLight(0xddddd, 0.1); //color, intensity
 sunlight.position.y = 15;
 scene.add(sunlight);
 
@@ -97,7 +97,7 @@ WallGroup.add(frontWall, leftWall, rightWall);
 
 //loop through each wall and create binding box
 
-for (let i=0; i< WallGroup.children.length;i++){
+for (let i = 0; i < WallGroup.children.length; i++) {
   WallGroup.children[i].BBox = new THREE.Box3();
   WallGroup.children[i].BBox.setFromObject(WallGroup.children[i]);
 }
@@ -115,6 +115,30 @@ ceiling.rotation.x = Math.PI / 2;
 ceiling.position.y = 12;
 
 scene.add(ceiling);
+
+//paintings function
+
+function createPainting(imageurl, width, height, position) {
+  const textureLoader = new THREE.TextureLoader();
+  const paintingTexture = textureLoader.load(imageurl);
+  const paintingMat = new THREE.MeshBasicMaterial({
+    map: paintingTexture,
+  });
+
+  const paintingGeo = new THREE.PlaneGeometry(width, height);
+  const painting = new THREE.Mesh(paintingGeo, paintingMat);
+  painting.position.set(position.x, position.y, position.z);
+
+  return painting;
+}
+
+const art1 = createPainting("src/public/artworks/shujaaz.jpg", 8, 9, new THREE.Vector3(0, 4, -19.99));
+
+const art2 =createPainting("src/public/artworks/goblins.jpg", 8, 9, new THREE.Vector3(12, 4, -19.99));
+
+
+
+scene.add(art1,art2);
 
 //function for when a key is pressed
 function onkeydown(event) {
