@@ -70,10 +70,29 @@ scene.add(WallGroup);
 
 //Front Wall
 
-const frontWall = new THREE.Mesh(new THREE.BoxGeometry(50, 20, 0.001), new THREE.MeshBasicMaterial({ color: "green" }));
-
+const frontWallGeo = new THREE.BoxGeometry(50, 20, 0.001);
+const frontWallMat = new THREE.MeshBasicMaterial({ color: "green" });
+const frontWall = new THREE.Mesh(frontWallGeo, frontWallMat);
 frontWall.position.z = -20;
 WallGroup.add(frontWall);
+
+//Left Wall
+const leftWallGeo = new THREE.BoxGeometry(50, 20, 0.001);
+const leftWallMat = new THREE.MeshBasicMaterial({ color: "red" });
+const leftWall = new THREE.Mesh(leftWallGeo,leftWallMat);
+
+leftWall.rotation.y = Math.PI/2;
+leftWall.position.x =-20;
+WallGroup.add(leftWall);
+
+//rightwall
+const rightWallGeo = new THREE.BoxGeometry(50, 20, 0.001);
+const rightWallMat = new THREE.MeshBasicMaterial({ color: "blue" });
+const rightWall = new THREE.Mesh(rightWallGeo,rightWallMat);
+
+rightWall.rotation.y = Math.PI/2;
+rightWall.position.x =20;
+WallGroup.add(rightWall);
 
 //function for when a key is pressed
 function onkeydown(event) {
