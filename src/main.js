@@ -132,13 +132,24 @@ function createPainting(imageurl, width, height, position) {
   return painting;
 }
 
+//front wall
 const art1 = createPainting("src/public/artworks/shujaaz.jpg", 8, 9, new THREE.Vector3(0, 4, -19.99));
+const art2 = createPainting("src/public/artworks/goblins.jpg", 8, 9, new THREE.Vector3(12, 4, -19.99));
 
-const art2 =createPainting("src/public/artworks/goblins.jpg", 8, 9, new THREE.Vector3(12, 4, -19.99));
+//rightwall
+const art3 = createPainting("src/public/artworks/May.jpg", 12, 8, new THREE.Vector3(19.99, 4, -14));
+const art4 = createPainting("src/public/artworks/doom.jpg", 8, 9, new THREE.Vector3(19.99, 4, -4));
+art3.rotation.y = 11;
+art4.rotation.y = 11;
 
+//leftwall
+const art5 = createPainting("src/public/artworks/May.jpg", 12, 8, new THREE.Vector3(-19.99, 4, 14));
+art5.rotation.y = -11;
 
+// Add all paintings to the scene
+scene.add(art1, art2, art3, art4, art5);
 
-scene.add(art1,art2);
+scene.add(art1, art2);
 
 //function for when a key is pressed
 function onkeydown(event) {
