@@ -46,7 +46,7 @@ canvas {
   display: none;
 }
 
-#menu {
+#introcard {
   width: 48em;
 
   position: absolute;
@@ -67,7 +67,7 @@ canvas {
   animation: fadeIn 1s ease-in;
 }
 
-#menu #content_container {
+#introcard #content_container {
   background-color: #fff;
   padding: 1em;
   border-bottom-left-radius: 0.9em;
@@ -78,7 +78,7 @@ canvas {
   box-shadow: 0em 0.25em 0.75em rgba(124, 124, 124, 0.5);
 }
 
-#menu #img_container {
+#introcard #img_container {
   position: relative;
   height: 14.5em;
   overflow: hidden;
@@ -86,12 +86,12 @@ canvas {
   border-top-right-radius: 0.9em;
 }
 
-#menu #img_container img {
+#introcard #img_container img {
   flex-shrink: 0;
   width: 105%;
 }
 
-#menu #content {
+#introcard #content {
   padding: 0.5em;
   opacity: 0;
   transform: translateY(20px);
@@ -109,17 +109,17 @@ canvas {
   }
 }
 
-#menu #content div {
+#introcard #content div {
   margin-bottom: 1em;
 }
 
-#menu h1 {
+#introcard h1 {
   font-family: 'Oswald';
   letter-spacing: 0.25em;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-#menu #content p {
+#introcard #content p {
   font-family: 'Lato', sans-serif;
   font-size: 1.1em;
   font-weight: 500;
@@ -128,13 +128,13 @@ canvas {
   margin: 0.2em 0;
 }
 
-#menu #content p.instructions {
+#introcard #content p.instructions {
   font-size: 1.3em;
   font-weight: 600;
   margin-bottom: 0.75em;
 }
 
-#menu #play_button {
+#introcard #play_button {
   display: inline-block;
   background-color: #34495e;
   color: #fff;
@@ -146,7 +146,7 @@ canvas {
   transition: all 0.4s;
 }
 
-#menu #play_button:hover {
+#introcard #play_button:hover {
   background-color: #2323be;
   color: #fff;
   transform: scale(1.05);
@@ -154,7 +154,7 @@ canvas {
   transition: all 0.4s;
 }
 
-#menu #play_button p {
+#introcard #play_button p {
   font-family: 'Oswald';
   letter-spacing: 0.125em;
   color: white;
@@ -162,13 +162,13 @@ canvas {
   transition: all 0.4s;
 }
 
-#menu #play_button:hover p {
+#introcard #play_button:hover p {
   color: #2323be;
   transition: all 0.4s;
   color: white;
 }
 
-#background_menu {
+#background_introcard {
   position: absolute;
   width: 100%;
   height: 100%;

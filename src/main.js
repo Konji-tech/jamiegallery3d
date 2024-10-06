@@ -45,37 +45,102 @@ const cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
 
 //Controls
-const orbitControls = new OrbitControls(camera, renderer.domElement);
+
+/*const orbitControls = new OrbitControls(camera, renderer.domElement);
 orbitControls.enableDamping = true; // Smooths the camera movement
 orbitControls.dampingFactor = 0.05; // Controls how smooth the movement is
-orbitControls.enableZoom = true; // Enable zooming in and out
+orbitControls.enableZoom = true; // Enable zooming in and out*/
 
-const controls = new PointerLockControls(camera,document.body);
+const controls = new PointerLockControls(camera, document.body);
 
-function startExperience(){
+function startExperience() {
   //lock Pointer
   controls.lock();
+  // orbitControls.enabled = false; // Disable orbit controls when PointerLock is active
   hideMenu();
 }
 
-const playButton = document.getElementById('play_button');
-playButton.addEventListener('click',startExperience);
+const playButton = document.getElementById("play_button");
+playButton.addEventListener("click", startExperience);
 
 // Hide Menu
 
-function hideMenu(){
-  const introcard = document.getElementById('introcard');
-  introcard.style.display('none');
+function hideMenu() {
+  const introcard = document.getElementById("introcard");
+  introcard.style.display = "none";
 }
 
-//show menu 
+//show menu
 
-function showMenu(){
-  const introcard = document.getElementById('introcard');
-  introcard.style.display('block');}
+function showMenu() {
+  const introcard = document.getElementById("introcard");
+  introcard.style.display = "block";
+}
 //Event Listeners for when keys are pressed
 
+controls.addEventListener("unlock", showMenu);
 
+//object to hold the keys pressed
+const keysPressed = {
+  ArrowUp: false,
+  ArrowDown: false,
+  ArrowLeft: false,
+  ArrowRight: false,
+  w: false,
+  a: false,
+  s: false,
+  d: false,
+};
+
+// Event Listener for when we press the keys
+document.addEventListener(
+  "keydown", //an event that fires when a key is pressed
+  (event) => {
+    if (event.key in keysPressed) {
+      //chekc if the key pressed is in the key pressed object
+      keysPressed[event.key] = true;
+    }
+  },
+  false
+);
+// Event Listener for when we release the keys
+document.addEventListener(
+  "keyup",
+  (event) => {
+    if (event.key in keysPressed) {
+      keysPressed[event.key] = false;
+    }
+  },
+  false
+);
+
+//Add the movement(left/right/forward/backward) to the scene
+
+const clock = new THREE.Clock();
+// Event Listener for when we press the keys
+
+function updateMovement(delta) {
+  const moveSpeed = 5 * delta;
+  const previousPosition = camera.position.clone(); // clone the camera position before the movement
+
+  if (keysPressed.ArrowRight || keysPressed.d) {
+    controls.moveRight(moveSpeed);
+  }
+  if (keysPressed.ArrowLeft || keysPressed.a) {
+    controls.moveRight(-moveSpeed);
+  }
+  if (keysPressed.ArrowUp || keysPressed.w) {
+    controls.moveForward(moveSpeed);
+  }
+  if (keysPressed.ArrowDown || keysPressed.s) {
+    controls.moveForward(-moveSpeed);
+  }
+
+  // After the movement is applied, we check for collisions by calling the checkCollision function. If a collision is detected, we revert the camera's position to its previous position, effectively preventing the player from moving through wallsss
+  if (checkCollision()) {
+    camera.position.copy(previousPosition); // reset the camera position to the previous position. The `previousPosition` variable is a clone of the camera position before the movement
+  }
+}
 
 const loader = new THREE.TextureLoader();
 
@@ -138,23 +203,27 @@ for (let i = 0; i < WallGroup.children.length; i++) {
 }
 
 function checkCollision() {
-  const playerBoundingBox = new THREE.Box3(); // creares bounding box for user
-  const cameraWorldPosition = new THREE.Vector3(); // creates vector to hold the cameran position
-  camera.getWorldPosition(cameraWorldPosition); // get the camera position and store it in the vector. The camera represents the user's position here
-  playerBoundingBox.setFromCenterAndSize(cameraWorldPosition, new THREE.Vector3(1, 1, 1));
+  const playerBoundingBox = new THREE.Box3(); // create a bounding box for the player
+  const cameraWorldPosition = new THREE.Vector3(); // create a vector to hold the camera position
+  camera.getWorldPosition(cameraWorldPosition); // get the camera position and store it in the vector. Note: The camera represents the player's position in our case.
+  playerBoundingBox.setFromCenterAndSize(
+    // setFromCenterAndSize is a method that takes the center and size of the box. We set the player's bounding box size and center it on the camera's world position.
+    cameraWorldPosition,
+    new THREE.Vector3(1, 1, 1)
+  );
 
   // loop through each wall
   for (let i = 0; i < WallGroup.children.length; i++) {
-    const wall = WallGroup.children[i]; //get wall
-    if (playerBoundingBox.intersectBox(wall.BoundingBox)) {
-      //check if the user's bounding box intersects with any of the wall bounding boxes
-
-      return true; // if it does
+    const wall = WallGroup.children[i]; // get the wall
+    if (playerBoundingBox.intersectsBox(wall.BoundingBox)) {
+      // check if the player's bounding box intersects with any of the wall bounding boxes
+      return true; // if it does, return true
     }
-
-    return false; // if it doesnt
   }
+
+  return false; // if it doesn't, return false
 }
+
 
 //ceiling
 
@@ -203,40 +272,17 @@ art5.rotation.y = -11;
 // Add all paintings to the scene
 scene.add(art1, art2, art3, art4, art5);
 
-scene.add(art1, art2);
-
-document.addEventListener("keydown", onkeydown, false);
 //function for when a key is pressed
-function onkeydown(event) {
-  const keycode = event.which;
-
-  //right arrow code
-  if (keycode === 39) {
-    camera.translateX(-0.05);
-  }
-
-  //left arrow key
-  else if (keycode === 37) {
-    camera.translateX(0.05);
-  }
-
-  //up arrow
-  else if (keycode === 38) {
-    camera.translateY(-0.05);
-  }
-
-  //down arrow
-  else if (keycode === 40) {
-    camera.translateY(0.05);
-  }
-}
 
 function animate(t = 0) {
   requestAnimationFrame(animate);
 
+  const delta = clock.getDelta();
+
   cube.rotation.x += 0.01;
   cube.rotation.y += 0.01;
-  orbitControls.update(); // Update the orbit controls
+  updateMovement(delta);
+  //orbitControls.update(); // Update the orbit controls
   // cube.rotation.y = t * 0.0001;
   renderer.render(scene, camera); //renders the scene
 }
