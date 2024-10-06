@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
 import { PointerLockControls } from "three-stdlib";
-import { OrbitControls } from "three-stdlib";
+
 
 const scene = new THREE.Scene(); // create the scene
 const w = window.innerWidth;
@@ -9,7 +9,7 @@ const h = window.innerHeight;
 
 //camera
 const camera = new THREE.PerspectiveCamera(
-  75, //field of view
+  60, //field of view
   w / h, //aspect ratio
   0.1, //near
   1000 //far
@@ -17,7 +17,7 @@ const camera = new THREE.PerspectiveCamera(
 
 scene.add(camera);
 //camera.position.set(0, 5, 15); 
-camera.position.z = 5; // move the camera back 5 units
+camera.position.set(0, 3, 0); // move the camera back 5 units
 
 //Renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true }); // for smooth edges
@@ -29,12 +29,12 @@ document.body.appendChild(renderer.domElement); //add the renderer to html
 
 
 // We can use a combination of ambient light and spotlights to create a more natural and immersive lighting environment.
-const ambientLight = new THREE.AmbientLight(0xFFFFFF, 3.0);
+const ambientLight = new THREE.AmbientLight(0xFFFFFF, 1.5);
 scene.add(ambientLight);
 
 //Directional Light
-const sunlight = new THREE.DirectionalLight(0xffffff, 1.0); //
-sunlight.position.set(10, 20, 10); // Higher Y position to cover more of the scene
+const sunlight = new THREE.DirectionalLight(0xffffff, 2.5); //
+sunlight.position.set(40, 90, 30); // Higher Y position to cover more of the scene
 sunlight.target.position.set(0, 0, 0); // Make sure it's pointing toward the center of the scene
 scene.add(sunlight);
 scene.add(sunlight.target); // Add target so that light direction works
@@ -45,7 +45,7 @@ const geometry = new THREE.BoxGeometry(1, 1, 1); // Geometry is the shape of the
 const material = new THREE.MeshStandardMaterial({ color: 0xff000 }); // color of the object
 
 const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+//scene.add(cube);
 
 //Controls
 
@@ -263,6 +263,8 @@ function createPainting(imageurl, width, height, position) {
   const paintingGeo = new THREE.PlaneGeometry(width, height);
   const painting = new THREE.Mesh(paintingGeo, paintingMat);
   painting.position.set(position.x, position.y, position.z);
+  painting.castShadow = true;
+  painting.receiveShadow = true;
 
   return painting;
 }
@@ -305,26 +307,49 @@ const artCollection = [
  artCollection.forEach((art) => scene.add(art));
  
  
-// Optimize the lights and shadows
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-// Enable shadows on objects
-floorPlane.receiveShadow = true;
-ceiling.receiveShadow = true;
-frontWall.castShadow = true;
-frontWall.receiveShadow = true;
-leftWall.castShadow = true;
-leftWall.receiveShadow = true;
-rightWall.castShadow = true;
-rightWall.receiveShadow = true;
-backWall.castShadow = true;
-backWall.receiveShadow = true;
-art1.castShadow = true;
-art1.receiveShadow = true;
-art2.castShadow = true;
-art2.receiveShadow = true;
 
+
+
+function createSpotlight(x, y, z, intensity, targetPosition) {
+  const spotlight = new THREE.SpotLight(0xffffff, intensity);
+  spotlight.position.set(x, y, z);
+  spotlight.target.position.copy(targetPosition);
+  spotlight.castShadow = true;
+  spotlight.angle = Math.PI / 4; // Narrower angle for focused light
+  spotlight.penumbra = 0.5;
+  spotlight.decay = 2;
+  spotlight.distance = 80; // Distance adjusted for more coverage
+  spotlight.shadow.mapSize.width = 2048;
+  spotlight.shadow.mapSize.height = 2048;
+  return spotlight;
+}
+
+// Define spotlights for each artwork
+const spotlight1 = createSpotlight(0, 10, -19.5, 3, art1.position); // Front wall spotlight
+const spotlight2 = createSpotlight(12, 10, -19.5, 3, art2.position); // Front wall spotlight
+const spotlight3 = createSpotlight(-12, 10, -19.5, 3, art7.position); // Front wall spotlight
+
+const spotlight4 = createSpotlight(19.5, 10, -9, 3, art4.position); // Right wall spotlight
+const spotlight5 = createSpotlight(19.5, 10, 1, 3, art8.position); // Right wall spotlight
+
+const spotlight6 = createSpotlight(-19.5, 10, -10, 3, art5.position); // Left wall spotlight
+const spotlight7 = createSpotlight(-19.5, 10, 2, 3, art6.position); // Left wall spotlight
+const spotlight8 = createSpotlight(-19.5, 10, 14, 3, art3.position); // Left wall spotlight
+
+// Add the spotlights to the scene
+scene.add(
+  spotlight1, spotlight2, spotlight3,
+  spotlight4, spotlight5,
+  spotlight6, spotlight7, spotlight8
+);
+
+// Add spotlight targets to the scene
+scene.add(
+  spotlight1.target, spotlight2.target, spotlight3.target,
+  spotlight4.target, spotlight5.target,
+  spotlight6.target, spotlight7.target, spotlight8.target
+);
 
 function animate(t = 0) {
   requestAnimationFrame(animate);
