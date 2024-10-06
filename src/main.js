@@ -1,6 +1,7 @@
 import * as THREE from "three";
 
 import { PointerLockControls } from "three-stdlib";
+import { OrbitControls } from "three-stdlib";
 
 const scene = new THREE.Scene(); // create the scene
 const w = window.innerWidth;
@@ -44,10 +45,37 @@ const cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
 
 //Controls
+const orbitControls = new OrbitControls(camera, renderer.domElement);
+orbitControls.enableDamping = true; // Smooths the camera movement
+orbitControls.dampingFactor = 0.05; // Controls how smooth the movement is
+orbitControls.enableZoom = true; // Enable zooming in and out
 
+const controls = new PointerLockControls(camera,document.body);
+
+function startExperience(){
+  //lock Pointer
+  controls.lock();
+  hideMenu();
+}
+
+const playButton = document.getElementById('play_button');
+playButton.addEventListener('click',startExperience);
+
+// Hide Menu
+
+function hideMenu(){
+  const introcard = document.getElementById('introcard');
+  introcard.style.display('none');
+}
+
+//show menu 
+
+function showMenu(){
+  const introcard = document.getElementById('introcard');
+  introcard.style.display('block');}
 //Event Listeners for when keys are pressed
 
-document.addEventListener("keydown", onkeydown, false);
+
 
 const loader = new THREE.TextureLoader();
 
@@ -72,13 +100,13 @@ scene.add(WallGroup);
 
 //Front Wall
 
-const frontWallGeo = new THREE.BoxGeometry(50, 20, 0.001);
+const frontWallGeo = new THREE.BoxGeometry(85, 20, 0.001);
 const frontWallMat = new THREE.MeshBasicMaterial({ color: "green" });
 const frontWall = new THREE.Mesh(frontWallGeo, frontWallMat);
 frontWall.position.z = -20;
 
 //Left Wall
-const leftWallGeo = new THREE.BoxGeometry(50, 20, 0.001);
+const leftWallGeo = new THREE.BoxGeometry(85, 20, 0.001);
 const leftWallMat = new THREE.MeshBasicMaterial({ color: "red" });
 const leftWall = new THREE.Mesh(leftWallGeo, leftWallMat);
 
@@ -86,20 +114,46 @@ leftWall.rotation.y = Math.PI / 2;
 leftWall.position.x = -20;
 
 //rightwall
-const rightWallGeo = new THREE.BoxGeometry(50, 20, 0.001);
+const rightWallGeo = new THREE.BoxGeometry(85, 20, 0.001);
 const rightWallMat = new THREE.MeshBasicMaterial({ color: "blue" });
 const rightWall = new THREE.Mesh(rightWallGeo, rightWallMat);
 
 rightWall.rotation.y = Math.PI / 2; //goes 90 degrees
 rightWall.position.x = 20;
 
-WallGroup.add(frontWall, leftWall, rightWall);
+//backwall
+const backWallGeo = new THREE.BoxGeometry(85, 20, 0.001);
+const backWallMat = new THREE.MeshBasicMaterial({ color: "blue" });
+const backWall = new THREE.Mesh(backWallGeo, backWallMat);
 
-//loop through each wall and create binding box
+backWall.position.z = 20;
+
+WallGroup.add(frontWall, leftWall, rightWall, backWall);
+
+//loop through each wall and create bounding box for each
 
 for (let i = 0; i < WallGroup.children.length; i++) {
-  WallGroup.children[i].BBox = new THREE.Box3();
-  WallGroup.children[i].BBox.setFromObject(WallGroup.children[i]);
+  WallGroup.children[i].BoundingBox = new THREE.Box3();
+  WallGroup.children[i].BoundingBox.setFromObject(WallGroup.children[i]);
+}
+
+function checkCollision() {
+  const playerBoundingBox = new THREE.Box3(); // creares bounding box for user
+  const cameraWorldPosition = new THREE.Vector3(); // creates vector to hold the cameran position
+  camera.getWorldPosition(cameraWorldPosition); // get the camera position and store it in the vector. The camera represents the user's position here
+  playerBoundingBox.setFromCenterAndSize(cameraWorldPosition, new THREE.Vector3(1, 1, 1));
+
+  // loop through each wall
+  for (let i = 0; i < WallGroup.children.length; i++) {
+    const wall = WallGroup.children[i]; //get wall
+    if (playerBoundingBox.intersectBox(wall.BoundingBox)) {
+      //check if the user's bounding box intersects with any of the wall bounding boxes
+
+      return true; // if it does
+    }
+
+    return false; // if it doesnt
+  }
 }
 
 //ceiling
@@ -112,7 +166,7 @@ const ceilingMat = new THREE.MeshBasicMaterial({
 const ceiling = new THREE.Mesh(ceilingGeo, ceilingMat);
 
 ceiling.rotation.x = Math.PI / 2;
-ceiling.position.y = 12;
+ceiling.position.y = 10;
 
 scene.add(ceiling);
 
@@ -143,7 +197,7 @@ art3.rotation.y = 11;
 art4.rotation.y = 11;
 
 //leftwall
-const art5 = createPainting("src/public/artworks/May.jpg", 12, 8, new THREE.Vector3(-19.99, 4, 14));
+const art5 = createPainting("src/public/artworks/santa.PNG", 12, 8, new THREE.Vector3(-19.99, 4, -8));
 art5.rotation.y = -11;
 
 // Add all paintings to the scene
@@ -151,6 +205,7 @@ scene.add(art1, art2, art3, art4, art5);
 
 scene.add(art1, art2);
 
+document.addEventListener("keydown", onkeydown, false);
 //function for when a key is pressed
 function onkeydown(event) {
   const keycode = event.which;
@@ -181,6 +236,7 @@ function animate(t = 0) {
 
   cube.rotation.x += 0.01;
   cube.rotation.y += 0.01;
+  orbitControls.update(); // Update the orbit controls
   // cube.rotation.y = t * 0.0001;
   renderer.render(scene, camera); //renders the scene
 }

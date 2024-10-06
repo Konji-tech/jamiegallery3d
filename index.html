@@ -3,18 +3,39 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel ="stylesheet" href ="src/style.css">
     <title>Jamie's Art Gallery</title>
-
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
-          "jsm/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
-        }
-      }
-    </script>
   </head>
   <body>
-    <script type="module" src="/src/main.js"></script> <!-- Adjusted path -->
+    <div id="menu">
+
+      <div id="img_container">
+          <div id="clown_bg"></div>
+      </div>
+      <div id="content_container">
+          <div id="content">
+              <div class="title">
+                  <h1 class="stroke">Jamie's Art Gallery in 3D!</h1>
+                  <h1 class="main">Jamie's Art Gallery in 3D!</h1>
+              </div>
+              <div>
+                  <p> 3D Art gallery.</p>
+                  <p>Made with Three.js</p>
+                  <p> By Konji !</p>
+              </div>
+              <div>
+                  <p class="instructions">Instructions:</p>
+                  <p>Arrow Keys or W/A/S/D to Move Around</p>
+                  <p>Mouse to Look Around</p>
+              </div>
+              <div id="play_button">
+                  <p>EXPLORE ART</p>
+              </div>
+          </div>
+      </div>
+  </div>
+
+    <script type="module" src="/src/main.js"></script>
+    <!-- Adjusted path -->
   </body>
 </html>
