@@ -16,6 +16,7 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 scene.add(camera);
+//camera.position.set(0, 5, 15); 
 camera.position.z = 5; // move the camera back 5 units
 
 //Renderer
@@ -26,20 +27,22 @@ document.body.appendChild(renderer.domElement); //add the renderer to html
 
 //lights
 
-//ambient light is a soft light that lights up all the light in the scenes equally
-const ambientLight = new THREE.AmbientLight(0x101010, 1.0); //color, intensity, distnace
 
+// We can use a combination of ambient light and spotlights to create a more natural and immersive lighting environment.
+const ambientLight = new THREE.AmbientLight(0xFFFFFF, 3.0);
 scene.add(ambientLight);
 
 //Directional Light
-const sunlight = new THREE.DirectionalLight(0xddddd, 0.1); //color, intensity
-sunlight.position.y = 15;
+const sunlight = new THREE.DirectionalLight(0xffffff, 1.0); //
+sunlight.position.set(10, 20, 10); // Higher Y position to cover more of the scene
+sunlight.target.position.set(0, 0, 0); // Make sure it's pointing toward the center of the scene
 scene.add(sunlight);
+scene.add(sunlight.target); // Add target so that light direction works
 
 //objects
 
 const geometry = new THREE.BoxGeometry(1, 1, 1); // Geometry is the shape of the object
-const material = new THREE.MeshBasicMaterial({ color: 0xff000 }); // color of the object
+const material = new THREE.MeshStandardMaterial({ color: 0xff000 }); // color of the object
 
 const cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
@@ -138,7 +141,7 @@ function updateMovement(delta) {
 
   // After the movement is applied, we check for collisions by calling the checkCollision function. If a collision is detected, we revert the camera's position to its previous position, effectively preventing the player from moving through wallsss
   if (checkCollision()) {
-    camera.position.copy(previousPosition); // reset the camera position to the previous position. The `previousPosition` variable is a clone of the camera position before the movement
+    camera.position.copy(previousPosition); // reset the camera position to the previous position. The previousPosition variable is a clone of the camera position before the movement
   }
 }
 
@@ -150,29 +153,34 @@ const floorTexture = loader.load("src/public/img/MarbleFloor.png");
 
 //create the floor plane
 const planGeometry = new THREE.PlaneGeometry(50, 50);
-const planeMaterial = new THREE.MeshBasicMaterial({
+const planeMaterial = new THREE.MeshStandardMaterial({
   map: floorTexture,
   side: THREE.DoubleSide,
 });
 const floorPlane = new THREE.Mesh(planGeometry, planeMaterial);
 floorPlane.rotation.x = Math.PI / 2; //rotate 90 degrees
 floorPlane.position.y = -Math.PI;
+floorTexture.wrapS = THREE.RepeatWrapping; // wrapS is horizonatl direction
+floorTexture.wrapT = THREE.RepeatWrapping; // wrapT the vertical direction
+floorTexture.repeat.set(10, 10); 
 scene.add(floorPlane);
 
 //create walls
 const WallGroup = new THREE.Group();
 scene.add(WallGroup);
 
+const wallTexture = loader.load("src/public/img/plaster.png");
+
 //Front Wall
 
 const frontWallGeo = new THREE.BoxGeometry(85, 20, 0.001);
-const frontWallMat = new THREE.MeshBasicMaterial({ color: "green" });
+const frontWallMat = new THREE.MeshStandardMaterial({ map: wallTexture });
 const frontWall = new THREE.Mesh(frontWallGeo, frontWallMat);
 frontWall.position.z = -20;
 
 //Left Wall
 const leftWallGeo = new THREE.BoxGeometry(85, 20, 0.001);
-const leftWallMat = new THREE.MeshBasicMaterial({ color: "red" });
+const leftWallMat = new THREE.MeshStandardMaterial({ map: wallTexture });
 const leftWall = new THREE.Mesh(leftWallGeo, leftWallMat);
 
 leftWall.rotation.y = Math.PI / 2;
@@ -180,7 +188,7 @@ leftWall.position.x = -20;
 
 //rightwall
 const rightWallGeo = new THREE.BoxGeometry(85, 20, 0.001);
-const rightWallMat = new THREE.MeshBasicMaterial({ color: "blue" });
+const rightWallMat = new THREE.MeshStandardMaterial({ map: wallTexture });
 const rightWall = new THREE.Mesh(rightWallGeo, rightWallMat);
 
 rightWall.rotation.y = Math.PI / 2; //goes 90 degrees
@@ -188,7 +196,7 @@ rightWall.position.x = 20;
 
 //backwall
 const backWallGeo = new THREE.BoxGeometry(85, 20, 0.001);
-const backWallMat = new THREE.MeshBasicMaterial({ color: "blue" });
+const backWallMat = new THREE.MeshStandardMaterial({ map: wallTexture });
 const backWall = new THREE.Mesh(backWallGeo, backWallMat);
 
 backWall.position.z = 20;
@@ -226,10 +234,11 @@ function checkCollision() {
 
 
 //ceiling
+const ceilingTexture = loader.load("src/public/img/officeCeiling.png"); //ceiling texture
 
 const ceilingGeo = new THREE.PlaneGeometry(50, 50); //geometry is shape of the object
-const ceilingMat = new THREE.MeshBasicMaterial({
-  color: "yellow",
+const ceilingMat = new THREE.MeshStandardMaterial({
+  map: ceilingTexture,
 });
 
 const ceiling = new THREE.Mesh(ceilingGeo, ceilingMat);
@@ -244,7 +253,12 @@ scene.add(ceiling);
 function createPainting(imageurl, width, height, position) {
   const textureLoader = new THREE.TextureLoader();
   const paintingTexture = textureLoader.load(imageurl);
-  const paintingMat = new THREE.MeshBasicMaterial({
+
+  // Set texture wrapping to prevent it from being cut off
+  paintingTexture.wrapS = THREE.ClampToEdgeWrapping;
+  paintingTexture.wrapT = THREE.ClampToEdgeWrapping;
+
+  const paintingMat = new THREE.MeshStandardMaterial({
     map: paintingTexture,
   });
 
@@ -267,12 +281,44 @@ art4.rotation.y = 11;
 
 //leftwall
 const art5 = createPainting("src/public/artworks/santa.PNG", 12, 8, new THREE.Vector3(-19.99, 4, -8));
+const art6 = createPainting("src/public/artworks/girl.PNG", 14, 8, new THREE.Vector3(-19.99, 4, 2));
 art5.rotation.y = -11;
+art6.rotation.y = -11;
 
-// Add all paintings to the scene
-scene.add(art1, art2, art3, art4, art5);
+const artCollection = [
+  art1,
+  art2,
+  art3,
+  art4,
+  art5,
+  art6,
+  
+ ];
+ 
+ 
+ artCollection.forEach((art) => scene.add(art));
+ 
+ 
+// Optimize the lights and shadows
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-//function for when a key is pressed
+// Enable shadows on objects
+floorPlane.receiveShadow = true;
+ceiling.receiveShadow = true;
+frontWall.castShadow = true;
+frontWall.receiveShadow = true;
+leftWall.castShadow = true;
+leftWall.receiveShadow = true;
+rightWall.castShadow = true;
+rightWall.receiveShadow = true;
+backWall.castShadow = true;
+backWall.receiveShadow = true;
+art1.castShadow = true;
+art1.receiveShadow = true;
+art2.castShadow = true;
+art2.receiveShadow = true;
+
 
 function animate(t = 0) {
   requestAnimationFrame(animate);
