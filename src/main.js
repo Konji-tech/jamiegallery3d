@@ -254,9 +254,7 @@ function createPainting(imageurl, width, height, position) {
   const textureLoader = new THREE.TextureLoader();
   const paintingTexture = textureLoader.load(imageurl);
 
-  // Set texture wrapping to prevent it from being cut off
-  paintingTexture.wrapS = THREE.ClampToEdgeWrapping;
-  paintingTexture.wrapT = THREE.ClampToEdgeWrapping;
+ 
 
   const paintingMat = new THREE.MeshStandardMaterial({
     map: paintingTexture,
@@ -271,19 +269,25 @@ function createPainting(imageurl, width, height, position) {
 
 //front wall
 const art1 = createPainting("src/public/artworks/shujaaz.jpg", 8, 9, new THREE.Vector3(0, 4, -19.99));
-const art2 = createPainting("src/public/artworks/goblins.jpg", 8, 9, new THREE.Vector3(12, 4, -19.99));
+const art2 = createPainting("src/public/artworks/rick.PNG", 8, 9, new THREE.Vector3(12, 4, -19.99));
+const art7 = createPainting("src/public/artworks/Reefer.jpg", 8, 9, new THREE.Vector3(-12, 4, -19.99));
 
 //rightwall
-const art3 = createPainting("src/public/artworks/May.jpg", 12, 8, new THREE.Vector3(19.99, 4, -14));
-const art4 = createPainting("src/public/artworks/doom.jpg", 8, 9, new THREE.Vector3(19.99, 4, -4));
-art3.rotation.y = 11;
-art4.rotation.y = 11;
+//
+const art4 = createPainting("src/public/artworks/Vi.PNG", 8, 9, new THREE.Vector3(19.99, 4, -9));
+const art8 = createPainting("src/public/artworks/Val.PNG", 8, 9, new THREE.Vector3(19.99, 4, 1));
+ // Adjust rotation for side wall
+art4.rotation.y = -Math.PI / 2;
+art8.rotation.y = -Math.PI / 2; // Adjust rotation for side wall
 
 //leftwall
-const art5 = createPainting("src/public/artworks/santa.PNG", 12, 8, new THREE.Vector3(-19.99, 4, -8));
-const art6 = createPainting("src/public/artworks/girl.PNG", 14, 8, new THREE.Vector3(-19.99, 4, 2));
-art5.rotation.y = -11;
-art6.rotation.y = -11;
+const art5 = createPainting("src/public/artworks/girl.PNG", 9, 8, new THREE.Vector3(-19.99, 4, -10));
+const art6 = createPainting("src/public/artworks/santa.PNG", 9, 8, new THREE.Vector3(-19.99, 4, 2));
+const art3 = createPainting("src/public/artworks/May.jpg", 9, 8, new THREE.Vector3(-19.99, 4, 14));
+art5.rotation.y = Math.PI / 2; // Adjust rotation for side wall
+art6.rotation.y = Math.PI / 2; // Adjust rotation for side wall
+art3.rotation.y = Math.PI / 2;
+
 
 const artCollection = [
   art1,
@@ -292,6 +296,8 @@ const artCollection = [
   art4,
   art5,
   art6,
+  art7,
+  art8,
   
  ];
  
